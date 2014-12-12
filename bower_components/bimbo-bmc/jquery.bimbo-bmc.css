@@ -1,0 +1,48 @@
+.app{
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+}
+.top-menu{
+	background-color: yellow;
+	width: 100%;
+	position: fixed;
+	top: 0;
+}
+.row-app{
+	float: left;
+	width: 100%
+}
+.top-row{
+	background-color: green;
+}
+.bottom-row{
+	background-color: yellow;
+}
+.col{
+	float: left;
+	width: 20%;
+	min-height: 100%;
+}
+.col-full{
+	width: 100%;
+}
+.col-w-50{
+	width: 50%;
+}
+
+.post-it{
+	padding: 10px;
+	position: relative;
+	float: left;
+	width: 100%;
+	height: auto;
+	background-color: blue;
+	margin-bottom: 10px;
+}
+.post-it > textarea, .post-it > p{
+	width: 100%;
+}
+.post-it > p{
+	display: none;
+}

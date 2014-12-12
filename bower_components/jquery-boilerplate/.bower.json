@@ -1,0 +1,28 @@
+{
+  "name": "jquery-boilerplate",
+  "version": "3.3.4",
+  "homepage": "http://jqueryboilerplate.com",
+  "authors": [
+    "Zeno Rocha <hi@zenorocha.com>"
+  ],
+  "description": "A jump-start for jQuery plugins development.",
+  "main": "src/jquery.boilerplate.js",
+  "keywords": [
+    "jquery",
+    "plugin",
+    "boilerplate",
+    "jquery-plugin",
+    "jquery-boilerplate"
+  ],
+  "license": "MIT",
+  "_release": "3.3.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "3.3.4",
+    "commit": "7e930b4f45dfe27f9f43d82c54c7795360cc842a"
+  },
+  "_source": "git://github.com/jquery-boilerplate/jquery-boilerplate.git",
+  "_target": "~3.3.4",
+  "_originalSource": "jquery-boilerplate",
+  "_direct": true
+}

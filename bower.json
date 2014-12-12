@@ -1,0 +1,19 @@
+{
+	"name": "bmc",
+	"version": "0.0.0",
+	"authors": [
+		"danielfpedro <danielfpedro@gmail.com>"
+	],
+	"license": "MIT",
+	"dependencies":{
+		"jquery": ">= 1.0 < 2.0",
+		"bootstrap": ">= 3.0 < 4.0"
+	},
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	]
+}
