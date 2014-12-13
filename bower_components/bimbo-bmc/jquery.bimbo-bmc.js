@@ -25,6 +25,8 @@
 				topMenuHeight: 50,
 				borderSize: 4,
 				borderColor: 'red',
+				colors: ['pink', '#FF0011', '#FF0088'],
+				postItColorDefault: '#FF0088'
 		};
 
 		// The actual plugin constructor
@@ -66,25 +68,7 @@
 
 					var _this = this;
 					$('button#addPostIt').click(function(){
-						var $this = $(this);
-						var $col = $this.parent();
-						var $newPostIt = _this.$postItProto.clone();
-						$newPostIt.appendTo($col).children('textarea').focus();
-
-						var maxTop = 0;
-						$('div.top-row').children().each(function(){
-							if ($(this).height() > $('div.top-row').height()) {
-								$('.top-row').css({'height': $(this).height()});
-							}							
-						});
-						
-						var maxBottom = 0;
-						$('div.bottom-row').children().each(function(){
-							if ($(this).height() > $('div.bottom-row').height()) {
-								maxBottom = $(this).height();
-								$('.bottom-row').css({'height': $(this).height()});
-							}
-						});
+						_this.addPostIt($(this));
 					});
 
 					$('.app').on('blur', 'div.post-it textarea', function(){
@@ -102,9 +86,97 @@
 					});
 					$('.app').on('keyup', 'div.post-it textarea', function(){
 						var $this = $(this);
-						console.log($this.val());
 						$this.next('p').text($this.val());
 					});
+
+					$('.app').on('click', '.color-post-it', function(){
+						_this.changePostItColor($(this));
+					});
+
+					$('.app').on('mouseenter', '.post-it, .container-colors-post-it', function(){
+						var $parent = $(this, '.post-it').children('.container-colors-post-it');
+						this.postItTimeout = setTimeout(function(){
+							$parent.stop().fadeIn();
+						}, 3000);
+					});
+					$('.app').on('click', '.post-it', function(){
+						var $parent = $(this, '.post-it').children('.container-colors-post-it');
+						$parent.stop().fadeIn();
+					});
+					$('.app').on('mouseleave', '.post-it, .container-colors-post-it', function(){
+						clearTimeout(this.postItTimeout);
+						var $parent = $(this, '.post-it').children('.container-colors-post-it');
+						$parent.stop().fadeOut();
+					});
+				},
+				changePostItColor: function($this){
+					var color = $this.css('background-color');
+					$('.color-post-it').removeClass('active');
+					$this.addClass('active').parents('.post-it').css({'background-color': color});
+				},
+				rgb2hex: function (rgb) {
+					rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+					return "#" + this.hex(rgb[1]) + this.hex(rgb[2]) + this.hex(rgb[3]);
+				},
+				hex: function (x) {
+					var hexDigits = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+					return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+				},			
+				addPostIt: function($this) {
+					var $col = $this.parent();
+					var $newPostIt = this.$postItProto.clone();
+					$newPostIt = this.fitPostIt($newPostIt, $col);
+
+					$newPostIt.css({'background-color': this.settings.postItColorDefault});
+
+					var $colorsContainer = $('<div/>').addClass('container-colors-post-it');
+
+					var _this = this;
+					$.each(this.settings.colors, function(index, value){
+						var $newColor = $('<div/>').addClass('color-post-it').css({'background-color': value});
+
+						if (value == _this.settings.postItColorDefault) {
+							$newColor.addClass('active');
+						}
+						$colorsContainer.append($newColor);
+					});
+
+					
+					$newPostIt.appendTo($col).append($colorsContainer).children('textarea').focus();
+
+					$('div.col').sortable({
+						connectWith: '.col',
+						update: function(event, ui){
+							var $col = ui.item.parents('.col');
+							ui.item = _this.fitPostIt(ui.item, $col);
+						}
+					});
+
+					var maxTop = 0;
+					$('div.top-row').children().each(function(){
+						if ($(this).height() > $('div.top-row').height()) {
+							$('.top-row').css({'height': $(this).height()});
+						}							
+					});
+					
+					var maxBottom = 0;
+					$('div.bottom-row').children().each(function(){
+						if ($(this).height() > $('div.bottom-row').height()) {
+							maxBottom = $(this).height();
+							$('.bottom-row').css({'height': $(this).height()});
+						}
+					});
+				},
+				fitPostIt: function($postIt, $col){
+					var margin = 20;
+					var w;
+					if ($col.hasClass('col-w-50')) {
+						w = $col.width() / 2 - margin;
+					} else {
+						w = $col.width() - margin;	
+					}
+					console.log(w);
+					return $postIt.css({width: w, 'margin-left': margin / 2});
 				},
 				createAppContainer: function () {
 					var wH = $(window).height();
