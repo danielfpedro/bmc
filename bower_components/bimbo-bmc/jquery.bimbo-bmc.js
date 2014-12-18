@@ -57,9 +57,9 @@
 					// call them like so: this.yourOtherFunction(this.element, this.settings).
 					console.log("xD");
 
-					this.createAppContainer();
-					this.createRows();
-					//this.createCols();
+					this.fitAppContainer();
+					this.fitRows();
+
 					this.createColBorder('top');
 					this.createColBorder('bottom');
 					this.createColBorder('left');
@@ -67,8 +67,33 @@
 					this.fitColHHalf('top');
 
 					var _this = this;
-					$('button#addPostIt').click(function(){
+
+
+					$(window).resize(function(event) {
+						// This order mather
+						_this.fitAppContainer();
+						_this.fitRows();
+						_this.fitColHHalf('top');
+
+						var maxTop = 0;
+						$('div.top-row').children().each(function(){
+							if ($(this).height() > $('div.top-row').height()) {
+								$('.top-row').css({'height': $(this).height()});
+							}							
+						});
+						
+						var maxBottom = 0;
+						$('div.bottom-row').children().each(function(){
+							if ($(this).height() > $('div.bottom-row').height()) {
+								maxBottom = $(this).height();
+								$('.bottom-row').css({'height': $(this).height()});
+							}
+						});
+					});
+
+					$('a#addPostIt').click(function(){
 						_this.addPostIt($(this));
+						return false;
 					});
 
 					$('.app').on('blur', 'div.post-it textarea', function(){
@@ -83,6 +108,7 @@
 						var $this = $(this);
 						$this.hide();
 						$this.prev('textarea').show().focus();
+						$this.siblings('.container-colors-post-it').hide();
 					});
 					$('.app').on('keyup', 'div.post-it textarea', function(){
 						var $this = $(this);
@@ -93,21 +119,23 @@
 						_this.changePostItColor($(this));
 					});
 
-					$('.app').on('mouseenter', '.post-it, .container-colors-post-it', function(){
-						var $parent = $(this, '.post-it').children('.container-colors-post-it');
-						this.postItTimeout = setTimeout(function(){
-							$parent.stop().fadeIn();
-						}, 3000);
-					});
-					$('.app').on('click', '.post-it', function(){
-						var $parent = $(this, '.post-it').children('.container-colors-post-it');
-						$parent.stop().fadeIn();
-					});
-					$('.app').on('mouseleave', '.post-it, .container-colors-post-it', function(){
-						clearTimeout(this.postItTimeout);
-						var $parent = $(this, '.post-it').children('.container-colors-post-it');
-						$parent.stop().fadeOut();
-					});
+					// $('.app').on('mouseenter', '.post-it, .container-colors-post-it', function(){
+					// 	var $parent = $(this, '.post-it').children('.container-colors-post-it');
+					// 	this.postItTimeout = setTimeout(function(){
+					// 		$parent.stop().fadeIn();
+					// 	}, 1000);
+					// });
+					$('.app').on({
+						mouseenter: function(){
+							if (!$(this).children('textarea').is(':focus')) {
+								var $colors = $(this).children('.container-colors-post-it');
+								$colors.stop().fadeIn('fast');
+							}
+						}, mouseleave: function(){
+							var $colors = $(this).children('.container-colors-post-it');
+							$colors.stop().fadeOut('fast');
+						}
+					}, '.post-it');
 				},
 				changePostItColor: function($this){
 					var color = $this.css('background-color');
@@ -123,7 +151,7 @@
 					return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 				},			
 				addPostIt: function($this) {
-					var $col = $this.parent();
+					var $col = $this.parents('.col');
 					var $newPostIt = this.$postItProto.clone();
 					$newPostIt = this.fitPostIt($newPostIt, $col);
 
@@ -145,6 +173,7 @@
 					$newPostIt.appendTo($col).append($colorsContainer).children('textarea').focus();
 
 					$('div.col').sortable({
+						items: 'div.post-it',
 						connectWith: '.col',
 						update: function(event, ui){
 							var $col = ui.item.parents('.col');
@@ -178,19 +207,21 @@
 					console.log(w);
 					return $postIt.css({width: w, 'margin-left': margin / 2});
 				},
-				createAppContainer: function () {
+				fitAppContainer: function () {
 					var wH = $(window).height();
 
 					$(this.settings.topMenu).css({height: this.settings.topMenuHeight});
-
-					this.appH = wH - this.settings.topMenuHeight;
+					var appH = wH - this.settings.topMenuHeight;
 					$(this.element).css({
 						'margin-top': this.settings.topMenuHeight,
-						'min-height': this.appH,
+						'height': appH,
 						'border': this.setBorder,
 					});
+					$('#wrap').css({
+						'height': '100%',
+					});
 				},
-				createRows: function(){
+				fitRows: function(){
 					// Pega novamente a altura da janela, nao pode ter um valor fixo pois conforme o redirecionamento ela vai constantemente mudando;
 					var appH = $(this.element).height();
 					var factor = 1.3;
@@ -205,7 +236,7 @@
 					$('div.col-border-' + position).css('border-' + position, this.setBorder);
 				},
 				fitColHHalf: function(position){
-					parentHeight = $('.' + position + '-row').height();
+					var parentHeight = $('.' + position + '-row').height();
 					$('div.col-' + position + '-h-50').css({'min-height': parentHeight / 2});
 				}
 		});
