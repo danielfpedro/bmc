@@ -75,20 +75,7 @@
 						_this.fitRows();
 						_this.fitColHHalf('top');
 
-						var maxTop = 0;
-						$('div.top-row').children().each(function(){
-							if ($(this).height() > $('div.top-row').height()) {
-								$('.top-row').css({'height': $(this).height()});
-							}							
-						});
-						
-						var maxBottom = 0;
-						$('div.bottom-row').children().each(function(){
-							if ($(this).height() > $('div.bottom-row').height()) {
-								maxBottom = $(this).height();
-								$('.bottom-row').css({'height': $(this).height()});
-							}
-						});
+						_this.fitRowsHeightOnChange();
 					});
 
 					$('a#addPostIt').click(function(){
@@ -119,12 +106,6 @@
 						_this.changePostItColor($(this));
 					});
 
-					// $('.app').on('mouseenter', '.post-it, .container-colors-post-it', function(){
-					// 	var $parent = $(this, '.post-it').children('.container-colors-post-it');
-					// 	this.postItTimeout = setTimeout(function(){
-					// 		$parent.stop().fadeIn();
-					// 	}, 1000);
-					// });
 					$('.app').on({
 						mouseenter: function(){
 							if (!$(this).children('textarea').is(':focus')) {
@@ -151,7 +132,7 @@
 					return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 				},			
 				addPostIt: function($this) {
-					var $col = $this.parents('.col');
+					var $col = $this.parents('.title-col').siblings('.container-post-its');
 					var $newPostIt = this.$postItProto.clone();
 					$newPostIt = this.fitPostIt($newPostIt, $col);
 
@@ -181,6 +162,9 @@
 						}
 					});
 
+					this.fitRowsHeightOnChange();
+				},
+				fitRowsHeightOnChange: function(){
 					var maxTop = 0;
 					$('div.top-row').children().each(function(){
 						if ($(this).height() > $('div.top-row').height()) {

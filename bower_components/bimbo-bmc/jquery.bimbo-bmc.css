@@ -30,7 +30,9 @@
 .col-w-50{
 	width: 50%;
 }
-
+.container-post-its{
+	padding: 10px;
+}
 .post-it{
 	padding: 10px;
 	position: relative;
